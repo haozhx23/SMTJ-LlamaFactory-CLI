@@ -1,0 +1,45 @@
+### model
+# model_name_or_path: meta-llama/Meta-Llama-3-8B-Instruct
+model_name_or_path: /tmp/initial-model-path/
+
+### method
+stage: dpo
+do_train: true
+finetuning_type: full
+# deepspeed: /opt/ml/code/LLaMA-Factory/examples/deepspeed/ds_z3_config.json  # choices: [ds_z0_config.json, ds_z2_config.json, ds_z3_config.json]
+# deepspeed: ds-config-z3-offload-act.json
+# deepspeed: /opt/ml/code/LLaMA-Factory/examples/deepspeed/ds_z3_offload_config.json
+# deepspeed: /opt/ml/code/LLaMA-Factory/examples/deepspeed/ds_z3_config.json
+deepspeed: /opt/ml/code/LLaMA-Factory/examples/deepspeed/${zero_conf}_config.json
+
+### dataset
+dataset_dir: /opt/ml/code/LLaMA-Factory/data
+dataset: dpo_en_demo
+template: llama3
+cutoff_len: 2048
+max_samples: 1000
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+### output
+output_dir: /tmp/saves/llama3-3b/full/dpo
+logging_steps: 10
+save_steps: 500
+plot_loss: true
+overwrite_output_dir: true
+
+### train
+per_device_train_batch_size: ${micro_bs}
+gradient_accumulation_steps: ${accum_steps}
+learning_rate: 5.0e-6
+num_train_epochs: 3.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+ddp_timeout: 180000000
+
+### eval
+val_size: 0.1
+per_device_eval_batch_size: 1
+eval_strategy: steps
+eval_steps: 500
