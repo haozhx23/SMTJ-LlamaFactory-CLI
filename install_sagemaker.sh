@@ -1,0 +1,1 @@
+pip install -U boto3 sagemaker awscli
